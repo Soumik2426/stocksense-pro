@@ -70,7 +70,11 @@ public class InventoryConsumer {
 
         } catch (Exception e) {
 
-            e.printStackTrace();
+            System.out.println(
+                    "Kafka processing failed"
+            );
+
+            throw new RuntimeException(e);
         }
     }
 }
