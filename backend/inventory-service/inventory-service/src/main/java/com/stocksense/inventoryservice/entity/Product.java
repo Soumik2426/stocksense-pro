@@ -44,6 +44,12 @@ public class Product {
     @PrePersist
     public void prePersist() {
 
+        if (this.tenantId == null) {
+            throw new IllegalStateException(
+                    "tenantId is required"
+            );
+        }
+
         if (this.isActive == null) {
             this.isActive = true;
         }

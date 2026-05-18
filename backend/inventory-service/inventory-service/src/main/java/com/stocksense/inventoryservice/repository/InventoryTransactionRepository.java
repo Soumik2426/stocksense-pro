@@ -8,8 +8,12 @@ import java.util.Optional;
 
 public interface InventoryTransactionRepository extends JpaRepository<InventoryTransaction, Long> {
 
-    Optional<InventoryTransaction> findByIdempotencyKey(String idempotencyKey);
-    List<InventoryTransaction>
-    findByVariantIdOrderByCreatedAtDesc(
+    Optional<InventoryTransaction> findByTenantIdAndIdempotencyKey(
+            Long tenantId,
+            String idempotencyKey
+    );
+
+    List<InventoryTransaction> findByTenantIdAndVariantIdOrderByCreatedAtDesc(
+            Long tenantId,
             Long variantId);
 }

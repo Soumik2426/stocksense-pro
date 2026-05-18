@@ -9,9 +9,25 @@ import java.util.List;
 public interface ProductVariantRepository
         extends JpaRepository<ProductVariant, Long> {
 
-    Optional<ProductVariant> findBySku(String sku);
+    Optional<ProductVariant> findByTenantIdAndSku(
+            Long tenantId,
+            String sku);
 
-    Optional<ProductVariant> findByBarcode(String barcode);
+    Optional<ProductVariant> findByTenantIdAndBarcode(
+            Long tenantId,
+            String barcode
+    );
 
-    List<ProductVariant> findByProductId(Long productId);
+    Optional<ProductVariant> findByTenantIdAndManufacturerBarcode(
+            Long tenantId,
+            String manufacturerBarcode
+    );
+
+    List<ProductVariant> findByTenantIdAndProductId(
+            Long tenantId,
+            Long productId);
+
+    Optional<ProductVariant> findByTenantIdAndId(
+            Long tenantId,
+            Long id);
 }

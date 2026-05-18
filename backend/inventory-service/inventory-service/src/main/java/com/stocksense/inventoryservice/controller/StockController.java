@@ -20,31 +20,39 @@ public class StockController {
 
     @GetMapping("/variant/{variantId}")
     public StockResponse getStock(
+            @RequestParam Long tenantId,
             @PathVariable Long variantId) {
 
         StockLedger ledger =
                 stockLedgerRepository
-                        .findByVariantId(variantId)
+                        .findByTenantIdAndVariantId(
+                                tenantId,
+                                variantId
+                        )
                         .orElseThrow(() ->
                                 new ResourceNotFoundException(
                                         "Stock not found"));
 
         return new StockResponse(
                 variantId,
-                ledger.getQuantity()
+                ledger.getAvailableQuantity()
         );
     }
 
     // Low Stock Alert
     @GetMapping("/low-stock")
     public List<LowStockResponse> getLowStockItems(
+            @RequestParam Long tenantId,
 
             @RequestParam(defaultValue = "5")
             Long threshold
     ) {
 
         return stockLedgerRepository
-                .findByQuantityLessThanEqual(threshold)
+                .findByTenantIdAndAvailableQuantityLessThanEqual(
+                        tenantId,
+                        threshold
+                )
                 .stream()
                 .map(ledger ->
                         LowStockResponse.builder()
@@ -58,7 +66,7 @@ public class StockController {
                                         ledger.getVariant()
                                                 .getSku())
                                 .availableQuantity(
-                                        ledger.getQuantity())
+                                        ledger.getAvailableQuantity())
                                 .build()
                 )
                 .toList();

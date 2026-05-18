@@ -6,15 +6,20 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
-public class InventoryRequest {
+public class ScannerInventoryRequest {
 
     @NotNull(message = "Tenant ID is required")
     private Long tenantId;
 
-    @NotNull(message = "Variant ID is required")
-    private Long variantId;
+    @NotBlank(message = "Barcode is required")
+    private String barcode;
+
+    @NotBlank(message = "Operation is required")
+    private String operation;
 
     @NotNull(message = "Quantity is required")
     @Min(value = 1,
@@ -26,4 +31,10 @@ public class InventoryRequest {
 
     @NotBlank(message = "Idempotency key is required")
     private String idempotencyKey;
+
+    private Long actorId;
+
+    private String eventSource;
+
+    private LocalDateTime scannedAt;
 }

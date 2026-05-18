@@ -19,11 +19,13 @@ public class TransactionController {
     public List<TransactionResponse>
     getTransactionsByVariant(
 
+            @RequestParam Long tenantId,
             @PathVariable Long variantId
     ) {
 
         return transactionRepository
-                .findByVariantIdOrderByCreatedAtDesc(
+                .findByTenantIdAndVariantIdOrderByCreatedAtDesc(
+                        tenantId,
                         variantId
                 )
                 .stream()

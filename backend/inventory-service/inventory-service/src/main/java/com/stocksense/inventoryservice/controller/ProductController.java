@@ -20,7 +20,13 @@ public class ProductController {
 
     // Create Product
     @PostMapping
-    public Product createProduct(@RequestBody Product product) {
+        public Product createProduct(@RequestBody Product product) {
+
+                if (product.getTenantId() == null) {
+                        throw new IllegalArgumentException(
+                                        "tenantId is required"
+                        );
+                }
 
         return productRepository.save(product);
     }
@@ -37,10 +43,14 @@ public class ProductController {
     // Search products by name
     @GetMapping("/search")
     public List<ProductResponse> searchProducts(
+            @RequestParam Long tenantId,
             @RequestParam String name) {
 
         return productRepository
-                .findByNameContainingIgnoreCase(name)
+                .findByTenantIdAndNameContainingIgnoreCase(
+                        tenantId,
+                        name
+                )
                 .stream()
                 .map(product -> ProductResponse.builder()
                         .productId(product.getId())
@@ -52,6 +62,7 @@ public class ProductController {
 
     @GetMapping
     public Page<ProductResponse> getProducts(
+            @RequestParam Long tenantId,
 
             @RequestParam(defaultValue = "0")
             int page,
@@ -64,7 +75,10 @@ public class ProductController {
                 PageRequest.of(page, size);
 
         return productRepository
-                .findAll(pageable)
+                .findByTenantId(
+                        tenantId,
+                        pageable
+                )
                 .map(product ->
                         ProductResponse.builder()
                                 .productId(product.getId())
@@ -78,6 +92,7 @@ public class ProductController {
     @GetMapping("/category/{category}")
     public Page<ProductResponse>
     getProductsByCategory(
+            @RequestParam Long tenantId,
 
             @PathVariable String category,
 
@@ -92,7 +107,8 @@ public class ProductController {
                 PageRequest.of(page, size);
 
         return productRepository
-                .findByCategoryIgnoreCase(
+                .findByTenantIdAndCategoryIgnoreCase(
+                        tenantId,
                         category,
                         pageable
                 )

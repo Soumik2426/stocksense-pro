@@ -5,5 +5,8 @@ public enum TransactionType {
     SALE,
     RESTOCK,
     REFUND,
-    ADJUSTMENT
+    ADJUSTMENT,
+    RESERVE_STOCK,
+    CONFIRM_SALE,
+    RELEASE_RESERVATION,
 }

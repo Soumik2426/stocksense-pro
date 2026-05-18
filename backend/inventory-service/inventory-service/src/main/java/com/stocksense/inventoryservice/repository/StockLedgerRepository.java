@@ -8,7 +8,13 @@ import java.util.Optional;
 
 public interface StockLedgerRepository extends JpaRepository<StockLedger, Long> {
 
-    Optional<StockLedger> findByVariantId(Long variantId);
-    List<StockLedger>
-    findByQuantityLessThanEqual(Long quantity);
+    Optional<StockLedger> findByTenantIdAndVariantId(
+            Long tenantId,
+            Long variantId
+    );
+
+    List<StockLedger> findByTenantIdAndAvailableQuantityLessThanEqual(
+            Long tenantId,
+            Long quantity
+    );
 }

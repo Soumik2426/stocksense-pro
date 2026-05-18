@@ -1,6 +1,7 @@
 package com.stocksense.inventoryservice.controller;
 
 import com.stocksense.inventoryservice.dto.ApiResponse;
+import com.stocksense.inventoryservice.dto.ScannerInventoryRequest;
 import jakarta.validation.Valid;
 import com.stocksense.inventoryservice.dto.InventoryRequest;
 import com.stocksense.inventoryservice.service.InventoryService;
@@ -14,12 +15,26 @@ public class InventoryController {
 
     private final InventoryService inventoryService;
 
+    @PostMapping("/scan")
+    public ApiResponse<Void> processScannerEvent(
+            @Valid @RequestBody ScannerInventoryRequest request) {
+
+        inventoryService.processScannerEvent(request);
+
+        return new ApiResponse<>(
+                true,
+                "Scanner event processed successfully",
+                null
+        );
+    }
+
     // RESTOCK
     @PostMapping("/restock")
     public ApiResponse<Void> restock(
             @Valid @RequestBody InventoryRequest request) {
 
         inventoryService.restock(
+                request.getTenantId(),
                 request.getVariantId(),
                 request.getQuantity(),
                 request.getTransactionId(),
@@ -39,6 +54,7 @@ public class InventoryController {
             @Valid @RequestBody InventoryRequest request) {
 
         inventoryService.sale(
+                request.getTenantId(),
                 request.getVariantId(),
                 request.getQuantity(),
                 request.getTransactionId(),
@@ -58,6 +74,7 @@ public class InventoryController {
             @Valid @RequestBody InventoryRequest request) {
 
         inventoryService.refund(
+                request.getTenantId(),
                 request.getVariantId(),
                 request.getQuantity(),
                 request.getTransactionId(),

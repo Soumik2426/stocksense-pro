@@ -3,6 +3,8 @@ package com.stocksense.inventoryservice.dto;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Builder
 public class VariantResponse {
@@ -19,5 +21,5 @@ public class VariantResponse {
 
     private String attributes;
 
-    private Double price;
+    private BigDecimal price;
 }

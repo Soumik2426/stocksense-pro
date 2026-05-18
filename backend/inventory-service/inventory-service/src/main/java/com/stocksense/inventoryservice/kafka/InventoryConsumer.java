@@ -1,6 +1,7 @@
 package com.stocksense.inventoryservice.kafka;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.stocksense.inventoryservice.dto.ScannerInventoryRequest;
 import com.stocksense.inventoryservice.service.InventoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -36,28 +37,70 @@ public class InventoryConsumer {
 
             switch (event.getOperation()) {
 
-                case "SALE" -> inventoryService.sale(
-                        event.getVariantId(),
-                        event.getQuantity(),
-                        event.getTransactionId(),
-                        event.getIdempotencyKey()
-                );
+                case "SALE", "RESTOCK", "REFUND" -> {
 
-                case "RESTOCK" ->
+                                        if (event.getTenantId() == null) {
+                                                throw new IllegalArgumentException(
+                                                                "tenantId is required"
+                                                );
+                                        }
+
+                    if (event.getBarcode() != null
+                                                        ) {
+
+                        ScannerInventoryRequest request =
+                                new ScannerInventoryRequest();
+                        request.setTenantId(event.getTenantId());
+                        request.setBarcode(event.getBarcode());
+                        request.setOperation(event.getOperation());
+                        request.setQuantity(event.getQuantity());
+                        request.setTransactionId(
+                                event.getTransactionId()
+                        );
+                        request.setIdempotencyKey(
+                                event.getIdempotencyKey()
+                        );
+                        request.setEventSource("KAFKA");
+
+                        inventoryService.processScannerEvent(
+                                request
+                        );
+
+                    } else if (event.getVariantId() == null) {
+                        throw new IllegalArgumentException(
+                                "variantId is required"
+                        );
+
+                    } else if ("SALE".equals(
+                            event.getOperation())) {
+                        inventoryService.sale(
+                                event.getTenantId(),
+                                event.getVariantId(),
+                                event.getQuantity(),
+                                event.getTransactionId(),
+                                event.getIdempotencyKey()
+                        );
+
+                    } else if ("RESTOCK".equals(
+                            event.getOperation())) {
                         inventoryService.restock(
+                                event.getTenantId(),
                                 event.getVariantId(),
                                 event.getQuantity(),
                                 event.getTransactionId(),
                                 event.getIdempotencyKey()
                         );
 
-                case "REFUND" ->
+                    } else {
                         inventoryService.refund(
+                                                                event.getTenantId(),
                                 event.getVariantId(),
                                 event.getQuantity(),
                                 event.getTransactionId(),
                                 event.getIdempotencyKey()
                         );
+                    }
+                }
 
                 default -> System.out.println(
                         "Unknown operation received"
